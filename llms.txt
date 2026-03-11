@@ -1,0 +1,59 @@
+# monad-gas
+
+> Gas estimator CLI for Monad blockchain. Shows gas limit costs, waste estimates, and compares Monad vs Ethereum.
+
+## Why this exists
+
+Monad charges gas based on gas_limit, not gas_used. Unlike Ethereum, there are no refunds for unused gas. This makes gas estimation accuracy critical: setting gas_limit too high wastes MON, setting it too low reverts the transaction.
+
+## Install
+
+```
+npx monad-gas
+```
+
+## Key features
+
+- Estimates gas for 6 common transaction presets (transfer, erc20, swap, nft, deploy)
+- Shows gas_limit (what you pay) vs estimated gas_used (what you actually use)
+- Calculates waste percentage and wasted MON
+- Compares Monad costs against Ethereum L1
+- Configurable gas limit multiplier (tighter = cheaper but riskier)
+- JSON output for CI/CD pipelines
+- Programmatic API for integration
+
+## Monad gas model
+
+```
+cost = gas_price x gas_limit (no refunds for unused gas)
+```
+
+This differs from Ethereum where unused gas is refunded. The --multiplier flag controls buffer above estimated usage (default 1.2 = 20% buffer).
+
+## CLI options
+
+--rpc <url>         Monad RPC endpoint (default: https://rpc.monad.xyz)
+--eth-rpc <url>     Ethereum RPC for comparison
+--no-compare        Skip Ethereum comparison
+--json              JSON output
+--mon-price <usd>   MON price for USD conversion
+--eth-price <usd>   ETH price for USD conversion
+--multiplier <n>    Gas limit multiplier (default: 1.2)
+-p, --preset <type> Specific preset: transfer, erc20-transfer, erc20-approve, swap, nft-mint, deploy
+--to <address>      Custom transaction target
+--data <hex>        Custom transaction calldata
+
+## API
+
+```typescript
+import { estimateGas, compareGas } from "monad-gas";
+
+const estimate = await estimateGas(
+  { to: "0x...", data: "0x..." },
+  { monadRpc: "https://rpc.monad.xyz", gasLimitMultiplier: 1.2 }
+);
+```
+
+## Related
+
+- monad-audit: Solidity contract scanner for Monad (github.com/LoserLab/monad-audit)

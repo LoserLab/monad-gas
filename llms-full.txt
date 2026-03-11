@@ -1,0 +1,94 @@
+# monad-gas — Full Technical Reference
+
+## Architecture
+
+TypeScript CLI tool built with Commander, tsup (bundler), vitest (testing).
+
+### File structure
+
+```
+src/
+  cli.ts          CLI interface (Commander)
+  estimator.ts    Core gas estimation + comparison logic
+  presets.ts      6 preset transaction builders
+  reporter.ts     Terminal (ANSI) + JSON output formatting
+  rpc.ts          JSON-RPC 2.0 client (eth_estimateGas, eth_gasPrice)
+  types.ts        TypeScript interfaces
+  index.ts        Public API barrel exports
+test/
+  estimator.test.ts   Unit tests for conversion functions
+  presets.test.ts     Unit tests for preset builders
+  reporter.test.ts    Unit tests for output formatting
+  rpc.test.ts         Unit tests for RPC calls (mocked fetch)
+social/
+  card.html           Social card template
+  card.png            Generated social card (Playwright screenshot)
+  screenshot.ts       Playwright screenshot script
+```
+
+### Key interfaces
+
+```typescript
+interface TransactionCall {
+  from?: string;
+  to: string;
+  data?: string;
+  value?: string;
+}
+
+interface GasEstimate {
+  gasLimit: bigint;           // What you PAY for on Monad
+  estimatedGasUsed: bigint;   // What the tx actually consumes
+  gasPrice: bigint;           // Gas price in wei
+  totalFee: bigint;           // gasLimit * gasPrice (what you pay)
+  usedFee: bigint;            // estimatedGasUsed * gasPrice (ideal cost)
+  wastedGas: bigint;          // gasLimit - estimatedGasUsed
+  wastePercent: string;       // Percentage of gas wasted
+  estimatedCostMon: string;   // Total cost in MON
+  estimatedCostUsd: string | null;
+}
+
+interface GasComparison {
+  monad: GasEstimate;
+  ethereum: { gasEstimate: bigint; gasPrice: bigint; estimatedCostEth: string; estimatedCostUsd: string | null } | null;
+  savings: { percentage: string; absoluteMon: string } | null;
+}
+
+interface RpcConfig {
+  monadRpc: string;
+  ethereumRpc?: string;
+  monPriceUsd?: number;
+  ethPriceUsd?: number;
+  gasLimitMultiplier?: number;  // Default 1.2
+}
+
+type PresetType = "transfer" | "erc20-transfer" | "erc20-approve" | "swap" | "nft-mint" | "deploy";
+```
+
+### Monad-specific behavior
+
+1. eth_estimateGas returns estimated gas consumption (gas_used)
+2. The gasLimitMultiplier is applied to get the actual gas_limit
+3. Total cost = gas_limit * gas_price (no refund for unused gas)
+4. Waste = gas_limit - estimated_gas_used
+
+### RPC endpoints
+
+- Mainnet: https://rpc.monad.xyz (Chain ID 143)
+- Standard eth_estimateGas and eth_gasPrice methods
+- No L1 oracle calls needed (Monad is an L1)
+
+### Build and test
+
+```bash
+npm install
+npm run build    # tsup
+npm test         # vitest
+npm run lint     # tsc --noEmit
+```
+
+### Package distribution
+
+- npm package with CJS + ESM + TypeScript declarations
+- CLI binary at dist/cli.js
+- Published to npm as "monad-gas"
