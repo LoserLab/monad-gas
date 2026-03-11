@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>monad-gas social card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .card {
+    width: 1200px;
+    height: 628px;
+    background: #0E091C;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 80px 64px 80px;
+  }
+
+  .top-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0E091C 0%, #6E54FF 50%, #0E091C 100%);
+    z-index: 10;
+  }
+
+  .glow-top {
+    position: absolute;
+    top: -180px;
+    right: 20%;
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(110, 84, 255, 0.12) 0%, rgba(110, 84, 255, 0.03) 50%, transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .glow-corner {
+    position: absolute;
+    bottom: -60px;
+    right: -40px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(110, 84, 255, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .glow-left {
+    position: absolute;
+    top: 40%;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(133, 230, 255, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Faded gas estimation output background */
+  .code-bg {
+    position: absolute;
+    top: 32px;
+    right: 50px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.8;
+    white-space: pre;
+    pointer-events: none;
+    z-index: 2;
+    user-select: none;
+    color: rgba(255, 255, 255, 0.04);
+  }
+
+  .code-bg .c-purple { color: rgba(110, 84, 255, 0.14); }
+  .code-bg .c-warn { color: rgba(255, 174, 69, 0.09); }
+  .code-bg .c-dim { color: rgba(255, 255, 255, 0.03); }
+
+  .brand {
+    position: absolute;
+    top: 40px;
+    left: 80px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .brand-line {
+    width: 32px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .brand-type {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6E54FF;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .badge {
+    position: absolute;
+    top: 36px;
+    right: 80px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border: 1px solid rgba(110, 84, 255, 0.3);
+    border-radius: 100px;
+    background: rgba(110, 84, 255, 0.06);
+  }
+
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    background: #6E54FF;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(110, 84, 255, 0.5);
+  }
+
+  .badge-text {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6E54FF;
+    letter-spacing: 0.08em;
+  }
+
+  .content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .code-hint {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 174, 69, 0.6);
+    margin-bottom: 4px;
+  }
+
+  .title {
+    font-family: 'Inter', sans-serif;
+    font-size: 72px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .title .dim {
+    color: rgba(255, 255, 255, 0.25);
+  }
+
+  .title .accent {
+    color: #6E54FF;
+  }
+
+  .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+  }
+
+  .bottom-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .pills {
+    display: flex;
+    gap: 8px;
+  }
+
+  .pill {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.02em;
+  }
+
+  .pill-purple {
+    background: rgba(110, 84, 255, 0.08);
+    border: 1px solid rgba(110, 84, 255, 0.2);
+    color: #6E54FF;
+  }
+
+  .pill-ghost {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .bottom-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .repo-link {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-line"></div>
+  <div class="glow-top"></div>
+  <div class="glow-corner"></div>
+  <div class="glow-left"></div>
+
+  <div class="code-bg"><span class="c-dim">$ monad-gas --preset transfer</span>
+
+<span class="c-purple">  Monad</span>  <span class="c-dim">(charges gas_limit, not gas_used)</span>
+<span class="c-dim">  Gas limit (you pay)    </span><span class="c-purple">25,200</span>
+<span class="c-dim">  Est. gas used          </span><span class="c-dim">21,000</span>
+<span class="c-warn">  Wasted gas             4,200 (16.7%)</span>
+<span class="c-dim">  Gas price              </span><span class="c-purple">0.052 gwei</span>
+<span class="c-dim">  You pay (gas_limit)    </span><span class="c-purple">0.00000131 MON</span>
+<span class="c-dim">  You'd pay (gas_used)   0.00000109 MON</span>
+
+<span class="c-purple">  Ethereum L1</span>
+<span class="c-dim">  Gas estimate           </span><span class="c-purple">21,000</span>
+<span class="c-dim">  Gas price              </span><span class="c-purple">28.500 gwei</span>
+<span class="c-dim">  Estimated cost         </span><span class="c-purple">0.00059850 ETH</span>
+
+<span class="c-purple">  ↓ 96.0% cheaper on Monad</span></div>
+
+  <div class="brand">
+    <span class="brand-name">LoserLab</span>
+    <div class="brand-line"></div>
+    <span class="brand-type">Open Source</span>
+  </div>
+
+  <div class="badge">
+    <div class="badge-dot"></div>
+    <span class="badge-text">GAS ESTIMATOR</span>
+  </div>
+
+  <div class="content">
+    <div class="code-hint">&#9888; You pay for gas_limit, not gas_used</div>
+
+    <div>
+      <div class="title">monad<span class="dim">-</span><span class="accent">gas</span></div>
+      <div class="subtitle">Gas estimator for Monad. Shows gas limit costs, waste estimates, and compares to Ethereum.</div>
+    </div>
+
+    <div class="bottom-row">
+      <div class="pills">
+        <span class="pill pill-purple">6 Presets</span>
+        <span class="pill pill-purple">Waste Tracking</span>
+        <span class="pill pill-ghost">gas_limit Model</span>
+        <span class="pill pill-ghost">CI-Ready</span>
+        <span class="pill pill-ghost">MIT License</span>
+      </div>
+      <div class="bottom-right">
+        <span class="repo-link">github.com/LoserLab/monad-gas</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

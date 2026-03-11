@@ -1,0 +1,42 @@
+{
+  "name": "monad-gas",
+  "version": "0.1.0",
+  "description": "Gas estimator for Monad. Shows gas limit costs, waste estimates, and compares Monad vs Ethereum. Critical: Monad charges on gas_limit, not gas_used.",
+  "bin": {
+    "monad-gas": "./dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": ["monad", "gas", "estimation", "evm", "gas-limit", "parallel-execution", "monbft"],
+  "author": "LoserLab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LoserLab/monad-gas"
+  },
+  "dependencies": {
+    "commander": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "playwright": "^1.58.2",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.0.0"
+  }
+}
