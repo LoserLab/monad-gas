@@ -1,6 +1,5 @@
 import type { TransactionCall } from "./types.js";
 
-/** JSON-RPC request helper */
 async function rpcCall<T>(
   url: string,
   method: string,
@@ -37,7 +36,6 @@ async function rpcCall<T>(
   return json.result;
 }
 
-/** Call eth_estimateGas */
 export async function ethEstimateGas(
   rpcUrl: string,
   tx: TransactionCall
@@ -45,12 +43,10 @@ export async function ethEstimateGas(
   return rpcCall<string>(rpcUrl, "eth_estimateGas", [tx]);
 }
 
-/** Call eth_gasPrice */
 export async function ethGasPrice(rpcUrl: string): Promise<string> {
   return rpcCall<string>(rpcUrl, "eth_gasPrice", []);
 }
 
-/** Call eth_getBlockByNumber to get the gas limit of the latest block */
 export async function getBlockGasLimit(rpcUrl: string): Promise<string> {
   const block = await rpcCall<{ gasLimit: string }>(
     rpcUrl,

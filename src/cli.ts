@@ -1,9 +1,8 @@
 import { Command } from "commander";
 import { compareGas } from "./estimator.js";
-import { buildPresetTx, allPresets } from "./presets.js";
+import { buildPresetTx, allPresets, presetDescriptions } from "./presets.js";
 import { formatPresetTable, formatComparison, formatJson } from "./reporter.js";
-import { presetDescriptions } from "./presets.js";
-import type { PresetType, RpcConfig } from "./types.js";
+import type { GasComparison, PresetType, RpcConfig } from "./types.js";
 
 const MONAD_MAINNET_RPC = "https://rpc.monad.xyz";
 const ETHEREUM_RPC = "https://ethereum-rpc.publicnode.com";
@@ -57,9 +56,27 @@ program
         };
         const comparison = await compareGas(tx, config);
         if (opts.json) {
-          console.log(
-            formatJson([{ preset: "transfer" as PresetType, comparison }])
-          );
+          console.log(JSON.stringify({
+            type: "custom",
+            monad: {
+              gasLimit: comparison.monad.gasLimit.toString(),
+              estimatedGasUsed: comparison.monad.estimatedGasUsed.toString(),
+              wastedGas: comparison.monad.wastedGas.toString(),
+              wastePercent: comparison.monad.wastePercent,
+              gasPrice: comparison.monad.gasPrice.toString(),
+              totalFee: comparison.monad.totalFee.toString(),
+              usedFee: comparison.monad.usedFee.toString(),
+              estimatedCostMon: comparison.monad.estimatedCostMon,
+              estimatedCostUsd: comparison.monad.estimatedCostUsd,
+            },
+            ethereum: comparison.ethereum ? {
+              gasEstimate: comparison.ethereum.gasEstimate.toString(),
+              gasPrice: comparison.ethereum.gasPrice.toString(),
+              estimatedCostEth: comparison.ethereum.estimatedCostEth,
+              estimatedCostUsd: comparison.ethereum.estimatedCostUsd,
+            } : null,
+            savings: comparison.savings,
+          }, null, 2));
         } else {
           console.log(formatComparison(comparison, "Custom Transaction"));
         }
@@ -68,13 +85,13 @@ program
 
       // Single preset
       if (opts.preset) {
-        const preset = opts.preset as PresetType;
-        if (!allPresets.includes(preset)) {
+        if (!allPresets.includes(opts.preset as PresetType)) {
           console.error(
-            `Error: Unknown preset "${preset}". Available: ${allPresets.join(", ")}`
+            `Error: Unknown preset "${opts.preset}". Available: ${allPresets.join(", ")}`
           );
           process.exit(1);
         }
+        const preset = opts.preset as PresetType;
         const tx = buildPresetTx(preset);
         const comparison = await compareGas(tx, config);
         if (opts.json) {
@@ -88,12 +105,7 @@ program
       }
 
       // All presets
-      const results: Array<{
-        preset: PresetType;
-        comparison: ReturnType<typeof compareGas> extends Promise<infer T>
-          ? T
-          : never;
-      }> = [];
+      const results: Array<{ preset: PresetType; comparison: GasComparison }> = [];
 
       for (const preset of allPresets) {
         const tx = buildPresetTx(preset);

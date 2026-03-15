@@ -12,7 +12,7 @@ const BLUE = "\x1b[34m";
 const CYAN = "\x1b[36m";
 const WHITE = "\x1b[37m";
 
-function line(label: string, value: string, color = WHITE): string {
+function formatRow(label: string, value: string, color = WHITE): string {
   return `  ${DIM}${label.padEnd(24)}${RESET}${color}${value}${RESET}`;
 }
 
@@ -26,15 +26,15 @@ export function formatEstimate(est: GasEstimate, label?: string): string {
   }
 
   lines.push(`${BOLD}${WHITE}  Monad${RESET}`);
-  lines.push(line("Gas limit (you pay)", est.gasLimit.toLocaleString(), CYAN));
-  lines.push(line("Est. gas used", est.estimatedGasUsed.toLocaleString(), DIM));
-  lines.push(line("Wasted gas", `${est.wastedGas.toLocaleString()} (${est.wastePercent})`, Number(est.wastedGas) > 0 ? YELLOW : DIM));
-  lines.push(line("Gas price", `${weiToGwei(est.gasPrice)} gwei`, CYAN));
+  lines.push(formatRow("Gas limit (you pay)", est.gasLimit.toLocaleString(), CYAN));
+  lines.push(formatRow("Est. gas used", est.estimatedGasUsed.toLocaleString(), DIM));
+  lines.push(formatRow("Wasted gas", `${est.wastedGas.toLocaleString()} (${est.wastePercent})`, Number(est.wastedGas) > 0 ? YELLOW : DIM));
+  lines.push(formatRow("Gas price", `${weiToGwei(est.gasPrice)} gwei`, CYAN));
   lines.push("");
-  lines.push(line("You pay (gas_limit)", `${est.estimatedCostMon} MON`, GREEN));
-  lines.push(line("You'd pay (gas_used)", `${weiToMon(est.usedFee)} MON`, DIM));
+  lines.push(formatRow("You pay (gas_limit)", `${est.estimatedCostMon} MON`, GREEN));
+  lines.push(formatRow("You'd pay (gas_used)", `${weiToMon(est.usedFee)} MON`, DIM));
   if (est.estimatedCostUsd) {
-    lines.push(line("", est.estimatedCostUsd, GREEN));
+    lines.push(formatRow("", est.estimatedCostUsd, GREEN));
   }
 
   return lines.join("\n");
@@ -51,24 +51,24 @@ export function formatComparison(cmp: GasComparison, label?: string): string {
 
   // Monad section
   lines.push(`${BOLD}${WHITE}  Monad${RESET}  ${DIM}(charges gas_limit, not gas_used)${RESET}`);
-  lines.push(line("Gas limit (you pay)", cmp.monad.gasLimit.toLocaleString(), CYAN));
-  lines.push(line("Est. gas used", cmp.monad.estimatedGasUsed.toLocaleString(), DIM));
-  lines.push(line("Wasted gas", `${cmp.monad.wastedGas.toLocaleString()} (${cmp.monad.wastePercent})`, Number(cmp.monad.wastedGas) > 0 ? YELLOW : DIM));
-  lines.push(line("Gas price", `${weiToGwei(cmp.monad.gasPrice)} gwei`, CYAN));
-  lines.push(line("You pay (gas_limit)", `${cmp.monad.estimatedCostMon} MON`, GREEN));
+  lines.push(formatRow("Gas limit (you pay)", cmp.monad.gasLimit.toLocaleString(), CYAN));
+  lines.push(formatRow("Est. gas used", cmp.monad.estimatedGasUsed.toLocaleString(), DIM));
+  lines.push(formatRow("Wasted gas", `${cmp.monad.wastedGas.toLocaleString()} (${cmp.monad.wastePercent})`, Number(cmp.monad.wastedGas) > 0 ? YELLOW : DIM));
+  lines.push(formatRow("Gas price", `${weiToGwei(cmp.monad.gasPrice)} gwei`, CYAN));
+  lines.push(formatRow("You pay (gas_limit)", `${cmp.monad.estimatedCostMon} MON`, GREEN));
   if (cmp.monad.estimatedCostUsd) {
-    lines.push(line("", cmp.monad.estimatedCostUsd, GREEN));
+    lines.push(formatRow("", cmp.monad.estimatedCostUsd, GREEN));
   }
 
   // Ethereum section
   if (cmp.ethereum) {
     lines.push("");
     lines.push(`${BOLD}${WHITE}  Ethereum L1${RESET}  ${DIM}(charges gas_used + refunds unused)${RESET}`);
-    lines.push(line("Gas estimate", cmp.ethereum.gasEstimate.toLocaleString(), CYAN));
-    lines.push(line("Gas price", `${weiToGwei(cmp.ethereum.gasPrice)} gwei`, CYAN));
-    lines.push(line("Estimated cost", `${cmp.ethereum.estimatedCostEth} ETH`, YELLOW));
+    lines.push(formatRow("Gas estimate", cmp.ethereum.gasEstimate.toLocaleString(), CYAN));
+    lines.push(formatRow("Gas price", `${weiToGwei(cmp.ethereum.gasPrice)} gwei`, CYAN));
+    lines.push(formatRow("Estimated cost", `${cmp.ethereum.estimatedCostEth} ETH`, YELLOW));
     if (cmp.ethereum.estimatedCostUsd) {
-      lines.push(line("", cmp.ethereum.estimatedCostUsd, YELLOW));
+      lines.push(formatRow("", cmp.ethereum.estimatedCostUsd, YELLOW));
     }
   }
 

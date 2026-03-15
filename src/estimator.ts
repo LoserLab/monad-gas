@@ -6,7 +6,6 @@ import type {
 } from "./types.js";
 import { ethEstimateGas, ethGasPrice } from "./rpc.js";
 
-/** Format wei to MON string with 8 decimal places */
 export function weiToMon(wei: bigint): string {
   const mon = Number(wei) / 1e18;
   if (mon === 0) return "0.00000000";
@@ -14,7 +13,6 @@ export function weiToMon(wei: bigint): string {
   return mon.toFixed(8);
 }
 
-/** Format wei to ETH string with 8 decimal places */
 export function weiToEth(wei: bigint): string {
   const eth = Number(wei) / 1e18;
   if (eth === 0) return "0.00000000";
@@ -22,7 +20,6 @@ export function weiToEth(wei: bigint): string {
   return eth.toFixed(8);
 }
 
-/** Format token amount to USD string */
 export function toUsd(amountStr: string, price: number): string {
   const amount = parseFloat(amountStr);
   if (amount === 0) return "$0.00";
@@ -31,7 +28,6 @@ export function toUsd(amountStr: string, price: number): string {
   return `$${usd.toFixed(2)}`;
 }
 
-/** Format gwei */
 export function weiToGwei(wei: bigint): string {
   const gwei = Number(wei) / 1e9;
   if (gwei < 0.001) return "<0.001";
@@ -124,10 +120,9 @@ export async function compareGas(
         }
       } else {
         // Fallback: compare raw gas costs (not perfectly accurate across chains)
-        const ethCost = gasEstimate * gasPrice;
-        if (ethCost > 0n) {
-          const saved = ethCost - monadEstimate.totalFee;
-          const pct = (Number(saved) / Number(ethCost)) * 100;
+        if (totalCostWei > 0n) {
+          const saved = totalCostWei - monadEstimate.totalFee;
+          const pct = (Number(saved) / Number(totalCostWei)) * 100;
           savings = {
             percentage: `${pct.toFixed(1)}%`,
             absoluteMon: weiToMon(saved > 0n ? saved : -saved),
